@@ -1,0 +1,968 @@
+Programs for DAA Lab Assessment
+
+Design, implement and test the programs for the following problems in any programming language of your choice:
+1.	Sort the given list of elements using Mergesort technique. 
+Program:
+#include<stdio.h>
+#include<stdlib.h>
+void merge(int a[],int l,int m,int h){
+  int i=l;
+  int j=m+1;
+  int k=l;
+  int b[h-l+1];
+  while(i<=m && j<=h){
+    if(a[i]<a[j]){
+      b[k]=a[i];
+      i++;
+    }
+    else{
+      b[k]=a[j];
+      j++;
+    }
+    k++;
+  }
+  while(i<=m){
+    b[k]=a[i];
+    i++;
+    k++;
+  }
+  while(j<=h){
+    b[k]=a[j];
+    k++;
+    j++;
+  }
+  i=l;
+  while(i<h+1){
+    a[i]=b[i];
+    i++;
+  }
+}
+void mergeSort(int a[],int l,int h){
+  if(l<h){
+    int m=(l+h)/2;
+    mergeSort(a,l,m);
+    mergeSort(a,m+1,h);
+    merge(a,l,m,h);
+  }
+}
+void readArray(int a[],int n){
+  for(int i=0;i<n;i++)
+    scanf("%d",&a[i]);
+}
+void printArray(int a[],int n){  
+  for(int i=0;i<n;i++)
+    printf("%d ",a[i]);
+printf("\n");
+}
+int main(){
+ // int a[]={5,8,3,6,2,0};
+  //int l=0,h=sizeof(a)/sizeof(a[0])-1;
+  int n;
+  printf("Enter the Size of the Array:");
+  scanf("%d",&n);
+  int a[n];
+  printf("Enter the Elements:");
+  readArray(a,n);
+  printf("Given Array:\n");
+  printArray(a,n); 
+  mergeSort(a,0,n-1);
+  printf("Sorted Array:\n");
+  printArray(a,n);
+}
+Output:
+Enter the Size of the Array:6
+Enter the Elements:5 8 3 6 2 0
+Given Array:
+5 8 3 6 2 0 
+Sorted Array:
+0 2 3 5 6 8
+------------------------------------------------------------------------------------------------------
+2.Find the kth smallest element using DAC. 
+Program:
+include <stdio.h>
+#include <stdlib.h>
+
+void interchange(int a[], int i, int j) {
+    int t = a[i];
+    a[i] = a[j];
+    a[j] = t;
+}
+
+int partition(int a[], int l, int h) {
+    int pivot = a[l];
+    int i = l;
+    int j = h + 1;
+    while (i < j) {
+        while (a[i] <= pivot && i < j) {
+            i++;
+        }
+        while (a[j] > pivot) {
+            j--;
+        }
+        if (i < j) {
+            interchange(a, i, j);
+        }
+    }
+    interchange(a, l, j);
+    return j;
+}
+
+int ksmall(int a[], int l, int h, int k) {
+    if (l == h) {
+        return a[l];
+    }
+    while (1) {
+        int j = partition(a, l, h);
+        if (k == j) {
+            return a[j];
+        } else if (k < j) {
+            h = j - 1;
+        } else {
+            l = j + 1;
+        }
+        if (l == h) {
+            return a[l];
+        }
+    }
+}
+void readArray(int a[],int n){
+  for(int i=0;i<n;i++)
+    scanf("%d",&a[i]);
+}
+void printArray(int a[],int n){  
+  for(int i=0;i<n;i++)
+    printf("%d ",a[i]);
+printf("\n");
+}
+int main() {
+    //int a[] = {55, 1, 42, 6, 53, 5};
+    //int k, l = 0, h = sizeof(a) / sizeof(a[0]) - 1;
+    
+    int n;
+    printf("Enter the Size of the Array:");
+    scanf("%d",&n);
+    int a[n],k;
+    printf("Enter the Elements:");
+    readArray(a,n);
+    printf("Given Array:\n");
+    printArray(a,n);
+    
+    printf("Enter the k value to find the kth smallest element:\n");
+    scanf("%d", &k);
+    int pos = ksmall(a, 0, n-1, k - 1);
+    printf("The %dth smallest element is %d", k, pos);
+    return 0;
+}
+Output:
+Enter the Size of the Array:6
+Enter the Elements:
+55 1 42 6 53 5
+Given Array:
+55 1 42 6 53 5 
+Enter the k value to find the kth smallest element:
+3
+The 3th smallest element is 6
+------------------------------------------------------------------------------------------------------
+
+3.Calculate the optimal profit of a Knapsack using Greedy method. 
+Program:
+#include <stdio.h>
+#include <stdlib.h>
+
+//int n = 7;
+//float p[] = { 10.0, 5.0,15.0, 7.0,6.0, 18.0, 3.0};
+//float w[] = {2.0, 3.0, 5.0, 7.0 , 1.0,4.0,1.0 };
+//float x[7];
+
+void readArray(float a[],int n){
+    for(int i=0;i<n;i++)
+        scanf("%f",&a[i]);
+}
+void printArray(float a[],int n){
+    for(int i=0;i<n;i++)
+        printf("%f ",a[i]);
+    printf("\n");
+}
+void interchange(int a[], int i, int j) {
+    int t = a[i];
+    a[i] = a[j];
+    a[j] = t;
+}
+
+void knapsack(float p[],float w[],int m, int n,float x[]) {
+    for (int i = 0; i < n; i++) {
+        x[i] = 0.0;
+    }
+    if (m == 0) {
+        return;
+    }
+    int index[n];
+    for (int i = 0; i < n; i++) {
+        index[i] = i;
+    }
+    for (int i = 0; i < n - 1; i++) {
+          for (int j = i + 1; j < n; j++) {
+            if (p[index[i]] / w[index[i]] < p[index[j]] / w[index[j]]) {
+                interchange(index, i, j);
+            }
+        }
+    }
+    float u = m;int i;
+    for (i = 0; i < n; i++) {
+        if (w[index[i]] > u) {
+            break;
+        }
+        x[index[i]] = 1.0;
+        u -= w[index[i]];
+    }
+    if (i < n) {
+        x[index[i]] = u / w[index[i]];
+    }
+}
+
+int main() {
+    int n,m;
+    printf("Enter the no.of elements:");
+    scanf("%d",&n);
+    float p[n],w[n],x[n];
+    printf("\nEnter the Profit values:\n");
+    readArray(p,n);
+    printf("\nEnter the Weight values:\n");
+    readArray(w,n);
+    printf("\nEnter the Maximum Limit of Knapsack:");
+    scanf("%d",&m);
+    //int m = 15;
+    knapsack(p, w, m, n, x);
+    float opt_prof=0;
+    printf("\nSolution set is:\n");
+    for(int i=0;i<n;i++){
+        printf("%f ",x[i]);
+        opt_prof+=p[i]*x[i];
+    }
+    printf("\nThe Optimal Profit Of the Knapsack is:%f",opt_prof);
+    
+    return 0;
+}
+Output:
+Enter the no.of elements:7
+
+Enter the Profit values:
+10 5 15 7 6 18 3
+
+Enter the Weight values:
+2 3 5 7 1 4 1
+
+Enter the Maximum Limit of Knapsack:15
+
+Solution set is:
+1.000000 0.666667 1.000000 0.000000 1.000000 1.000000 1.000000 
+The Optimal Profit Of the Knapsack is:55.333336
+------------------------------------------------------------------------------------------------------
+4.	Construct minimum cost spanning tree for the given graph. (Prim’s / Kruskal’s algorithm)
+Program(Prim’s):
+#include<stdio.h>
+#include <stdlib.h>
+int n;
+int mincostIndex(int near[], int cost[n][n]) {
+  int mincost = 999;
+  int j;
+  for (int i = 0; i < n; i++) {
+    if (near[i] != -1) {
+      if (cost[i][near[i]] < mincost) {
+        mincost = cost[i][near[i]];
+        j = i;
+      }
+    }
+  }
+  return j;
+}
+int Prims(int c[n][n], int t[n - 1][2]) {
+  int k = 0, l = 1;
+  for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) {
+      if (i != j && c[k][l] > c[i][j]) {
+        k = i;
+        l = j;
+      }
+    }
+  }
+  // printf("%d\t,%d",k,l);
+  int mincost = c[k][l];
+  int near[n];
+  for (int i = 0; i < n; i++) {
+    if (c[i][k] < c[i][l]) {
+      near[i] = k;
+    } else {
+      near[i] = l;
+    }
+  }
+  near[k] = -1;
+  near[l] = -1;
+  t[0][0] = k;
+  t[0][1] = l;
+  for (int i = 1; i < n - 1; i++) {
+    int j = mincostIndex(near, c);
+    mincost += c[j][near[j]];
+    t[i][0] = j;
+    t[i][1] = near[j];
+    near[j] = -1;
+    for (int k = 0; k < n; k++) {
+      if (c[k][near[k]] > c[k][j] && near[k] != -1) {
+        near[k] = j;
+      }
+    } 
+  }
+  return mincost;
+}
+int main(void) {
+  printf("Enter no of vertices of graph\n");
+  scanf("%d", &n);
+  int cost[n][n];
+  printf("Enter the Graph(Cost Adjacency Matrix):\n");
+  //n=7;
+  // int cost[7][7] = {
+  //     {0, 28, 999, 999, 999, 10, 999}, {28, 0, 16, 999, 999, 999, 14},
+  //     {999, 16, 0, 12, 999, 999, 999}, {999, 999, 12, 0, 22, 999, 18},
+  //     {999, 999, 999, 22, 0, 25, 24},  {10, 999, 999, 999, 25, 0, 999},
+  //     {999, 14, 999, 18, 24, 999, 0}};
+  int t[n - 1][2];
+  for(int i=0;i<n;i++){
+    printf("Enter distance between %d and others\n",i);
+    for(int j=0;j<n;j++){
+      scanf("%d",&cost[i][j]);
+    }
+  }
+  int mincost = Prims(cost, t);
+  printf("The minimum cost of Spanning tree is:%d \n", mincost);
+  printf("The Result:\n");
+  for (int i = 0; i < n - 1; i++) {
+    printf("%d\t %d\n", t[i][0] + 1, t[i][1] + 1);
+  }
+}
+Output:
+Enter no of vertices of graph:
+7
+Enter the Graph(Cost Adjacency Matrix):
+Enter distance between 0 and others:
+0 28 999 999 999 10 999
+Enter distance between 1 and others:
+28 0 16 999 999 999 14
+Enter distance between 2 and others:
+999 16 0 12 999 999 999
+Enter distance between 3 and others:
+999 999 12 0 22 999 18
+Enter distance between 4 and others:
+999 999 999 22 0 25 24
+Enter distance between 5 and others:
+10 999 999 999 25 0 999
+Enter distance between 6 and others:
+999 14 999 18 24 999 0
+The minimum cost of Spanning tree is:99 
+The Result:
+1        6
+5        6
+4        5
+3        4
+2        3
+7        2
+
+
+Program(Krushkal’s):
+#include<stdio.h>
+#include<stdlib.h>
+struct Edge{
+int source;
+int destination;
+int weight;
+};
+typedef struct Edge Edge;
+int n;
+int find(int i,int parent[]){
+  while(parent[i]!=-1){
+    i=parent[i];
+  }
+  return i;
+}
+void Union(int i,int j,int parent[]){
+  parent[j]=i;
+}
+int Krushkal(int cost[n][n],Edge edges[],int k){
+  int i=0,mincost=0;
+  int parent[n],t[n-1][2];
+  for(int j=0;j<n;j++){
+    parent[j]=-1;
+  }
+  int j=0;
+  while(i<n-1  &&  j<k){
+    int u=edges[j].source;
+    int v=edges[j].destination;
+    int p1=find(u,parent);
+    int p2=find(v,parent);
+    if(p1!=p2){
+      i=i+1;
+      mincost+=cost[u][v];
+      t[i][0]=u;t[i][1]=v;
+      Union(p1,p2,parent);
+    }
+   j=j+1;
+  }
+  return mincost;
+}
+int main(){
+  printf("Enter no of vertices \n");
+  scanf("%d",&n);
+  int cost[n][n];
+  printf(“Enter the Graph(Cost Adjacency Matrix):”\n);
+  for(int i=0;i<n;i++){
+    printf("Enter distance between %d and others\n",i);
+    for(int j=0;j<n;j++){
+      scanf("%d",&cost[i][j]);
+    }
+  }
+  //int cost[7][7]={{0,28,999,999,999,10,999},{28,0,16,999,999,999,14},{999,16,0,12,999,999,999},{999,999,12,0,22,999,18},{999,999,999,22,0,25,24},{10,999,999,999,25,0,999},{999,14,999,18,24,999,0}};
+  // n=7;
+  Edge edges[10];
+int k=0;
+  //Creating edges Array from cost adjacency matrix
+  for(int i=0;i<n;i++){
+    for(int j=0;j<=i;j++){
+      if(cost[i][j]!=0 && cost[i][j]!=999){
+        edges[k].source=j;
+        edges[k].destination=i;
+        edges[k].weight=cost[i][j];
+        k++;
+      }
+    }
+  }
+  //Sorting The Edges based on Edge Weights
+  for(int i=0;i<k;i++){
+    for(int j=0;j<k-1;j++){
+      if(edges[j].weight>edges[j+1].weight){
+        Edge temp=edges[j];
+        edges[j]=edges[j+1];
+        edges[j+1]=temp;
+      }
+    }
+  }
+  int mincost=Krushkal(cost,edges,k);
+  printf("\nThe minimun cost of the Spanning Tree is %d",mincost);
+}
+Output:
+Enter no of vertices of graph:
+7
+Enter the Graph(Cost Adjacency Matrix):
+Enter distance between 0 and others:
+0 28 999 999 999 10 999
+Enter distance between 1 and others:
+28 0 16 999 999 999 14
+Enter distance between 2 and others:
+999 16 0 12 999 999 999
+Enter distance between 3 and others:
+999 999 12 0 22 999 18
+Enter distance between 4 and others:
+999 999 999 22 0 25 24
+Enter distance between 5 and others:
+10 999 999 999 25 0 999
+Enter distance between 6 and others:
+999 14 999 18 24 999 0
+The minimum cost of Spanning tree is:99 
+------------------------------------------------------------------------------------------------------
+5.Determine the path length from a source vertex to the other vertices in a given    graph. The edges in the graph have positive weights. (Dijkstra’s algorithm). 
+Program:
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+int n;
+int mincostVertex(int dist[],int s[]){
+  int min_cost=999;
+  int index=n-1;
+  for(int i=0;i<n;i++){
+    if(min_cost>dist[i] && s[i]!=1){
+      min_cost=dist[i];
+      index=i;
+    }
+  }
+  return index;
+}
+void ShortestPath(int v ,int cost[][n],int dist[]){
+  int s[n];
+  for(int i=0;i<n;i++){
+    s[i]=0;
+    dist[i]=cost[v][i];
+  }
+  s[v]=1;
+  for(int i=1;i<n-1;i++){
+    int u=mincostVertex(dist,s);
+    s[u]=1;
+    for(int j=0;j<n;j++){
+      if(s[j]!=1 && cost[u][j]!=999){
+        if(dist[j]>dist[u]+cost[u][j]){
+          dist[j]=dist[u]+cost[u][j];
+        }
+      }
+    }
+  }
+}
+int main(){
+  // n=7;
+  // int cost[7][7]={{0,1,2,999,999,999,3},
+  // {999,0,999,4,999,999,999},
+  // {999,999,0,999,3,1,999},
+  // {999,999,999,0,999,1,999},
+  // {999,999,999,999,0,2,999},
+  // {999,999,999,999,999,0,999},
+  // {999,999,999,999,999,8,0}};
+  printf("Enter no of vertices of graph:\n");
+  scanf("%d", &n);
+  int cost[n][n];
+  printf("Enter the Graph(Cost Adjacency Matrix):\n");
+  for(int i=0;i<n;i++){
+    printf("Enter distance between %d and others:\n",i);
+    for(int j=0;j<n;j++){
+      scanf("%d",&cost[i][j]);
+    }
+  }
+  printf("\nEnter the source vertex:");
+  int v,dist[n];
+  scanf("%d",&v);
+  ShortestPath(v,cost,dist);
+  printf("\nThe distance of all vertices from %d is :\n",v);
+  for(int i=0;i<n;i++){
+    printf("%d ",dist[i]);
+  }
+}
+Output:
+The min cost is 99Enter no of vertices of graph:
+8
+Enter the Graph(Cost Adjacency Matrix):
+Enter distance between 0 and others:
+0 999 999 999 999 999 999 999               
+Enter distance between 1 and others:
+3 0 999 999 999 999 999 999
+Enter distance between 2 and others:
+10 3 0 999 999 999 999 999
+Enter distance between 3 and others:
+999 999 12 0 999 999 999 999
+Enter distance between 4 and others:
+999 999 999 15 0 2 999 999
+Enter distance between 5 and others:
+999 999 999 10 999 0 9 14
+Enter distance between 6 and others:
+999 999 999 999 999 999 0 10
+Enter distance between 7 and others:
+17 999 999 999 999 999 999 0
+
+Enter the source vertex:4
+
+The distance of all vertices from 4 is :
+30 27 24 12 0 2 11 16
+------------------------------------------------------------------------------------------------------
+6.You are given an integer array “coins” representing coins of different denominations and an integer amount representing a total amount of money. Return the fewest number of coins that you need to make up that amount. If that amount of money cannot be made up by any combination of the coins, return -1. You may assume that you have an infinite number of each kind of coin:
+Program:
+#include <stdio.h>
+#include <limits.h>
+
+int minCoinsUtil(int coins[], int m, int V, int* dp)
+{
+    if (V == 0)
+        return 0;
+    if (dp[V] != -1)
+        return dp[V];
+    int res = INT_MAX;
+    for (int i = 0; i < m; i++) {
+        if (coins[i] <= V) {
+            int sub_res = minCoinsUtil(coins, m, V - coins[i], dp);
+            if (sub_res != INT_MAX && sub_res + 1 < res)
+                res = sub_res + 1;
+        }
+    }
+    dp[V] = res;
+    return res;
+}
+int minCoins(int coins[], int m, int V)
+{
+    int dp[V + 1];
+    for (int i = 0; i <= V; i++)
+        dp[i] = -1;
+    return minCoinsUtil(coins, m, V, dp);
+}
+int main()
+{
+  int m;
+  printf("Enter the no. of kinds of coins:");
+  scanf("%d",&m);
+  int coins[m];
+  printf("\nEnter the values of coins (in non-increasing  order):");
+  for(int i=0;i<m;i++){
+    scanf("%d",&coins[i]);
+  }
+  
+    //int m = sizeof(coins) / sizeof(coins[0]);
+    int V;
+    printf("\nEnter the Amount:");
+    scanf("%d",&V);
+    int res = minCoins(coins, m, V);
+    if (res == INT_MAX)
+        res = -1;
+    printf("Minimum coins required is %d", res);
+    return 0;
+}
+Output:
+Enter the no. of kinds of coins:3
+
+Enter the values of coins (in non-increasing  order):5 2 1
+
+Enter the Amount:54
+Minimum coins required is 12
+
+------------------------------------------------------------------------------------------------------
+7.Determine the shortest path from source vertex to the other vertices in a given    graph. The graph may have negative weight edges. (Bellman-Ford Algorithm) 
+Program:
+#include <stdio.h>
+#include<stdlib.h>
+int n;
+int check(int c[][n],int u){
+  int Incoming_edge=0;
+  for(int i=0;i<n;i++){
+    if(i!=u && c[i][u]!=999){
+      Incoming_edge=1;
+      break;
+    }
+  }
+  return Incoming_edge;
+}
+void Bellman_Ford(int c[][n],int v,int d[]){
+  for(int i=0;i<n;i++){
+    d[i]=c[v][i];
+  }
+  for(int k=1;k<n-1;k++){
+    for(int u=0;u<n;u++){
+        if(u!=v && check(c,u)==1){
+          for(int i=0;i<n;i++){
+            if(i!=u && d[u]>d[i]+c[i][u]){
+              d[u]=d[i]+c[i][u];
+            }
+          }
+        }
+    }
+  }
+}
+int main(){
+//   n=7;
+//   int cost[7][7] = {
+//   {0,6,5,5,999,999,999},
+//   {999,0,999,999,-1,999,999},
+//   {999,-2,0,999,1,999,999},
+//   {999,999,-2,0,999,-1,999},
+//   {999,999,999,999,0,999,3},
+//   {999,999,999,999,999,0,3},
+//   {999,999,999,999,999,999,0},
+// };
+  printf("Enter no of vertices of graph:\n");
+  scanf("%d", &n);
+  int cost[n][n];
+  printf("Enter the Graph(Cost Adjacency Matrix):\n");
+  for(int i=0;i<n;i++){
+    printf("Enter distance between %d and others:\n",i);
+    for(int j=0;j<n;j++){
+      scanf("%d",&cost[i][j]);
+    } 
+  }
+  
+  int d[n],v;
+  printf("Enter the Source Vertex:");
+  scanf("%d",&v);
+  Bellman_Ford(cost,v,d);
+  printf("The minimum lengths of paths from source vertex - %d to all others:\n",v);
+  for(int i=0;i<n;i++){
+    printf("%d\t",d[i]);
+  }
+}
+Output:
+Enter no of vertices of graph:
+7
+Enter the Graph(Cost Adjacency Matrix):
+Enter distance between 0 and others:
+0 6 5 5 999 999 999
+Enter distance between 1 and others:
+999 0 999 999 -1 999 999
+Enter distance between 2 and others:
+999 -2 0 999 1 999 999
+Enter distance between 3 and others:
+999 999 -2 0 999 -1 999
+Enter distance between 4 and others:
+999 999 999 999 0 999 3
+Enter distance between 5 and others:
+999 999 999 999 999 0 3
+Enter distance between 6 and others:
+999 999 999 999 999 999 0
+Enter the Source Vertex:0
+The minimum lengths of paths from source vertex - 0 to all others:
+0   1   3   5   0   4   3
+------------------------------------------------------------------------------------------------------
+8.Find shortest path from any node to any other node (All pairs Shortest path) within a graph. 
+Program:
+#include<stdio.h>
+#include<stdlib.h>
+int n;
+int min(int a,int b){
+  if(a>b){
+    return b;
+  }
+  else{
+    return a;
+  }
+}
+void APSP(int c[][n],int A[][n]){
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        A[i][j]=c[i][j];
+      }
+    }
+  for(int k=0;k<n;k++){
+    for(int i=0;i<n;i++){
+      for(int j=0;j<n;j++){
+        A[i][j]=min(A[i][j],A[i][k]+A[k][j]);
+      }
+    }
+  }
+}
+int main(){
+  // n=5;
+  // int cost[][5]={
+  // {0,3,8,999,-4},
+  // {999,0,999,1,7},
+  // {999,4,0,999,999},
+  // {2,999,-5,0,6},
+  // {999,999,999,6,0},
+  // };
+  printf("Enter no of vertices of graph:\n");
+  scanf("%d", &n);
+  int cost[n][n];
+  printf("Enter the Graph(Cost Adjacency Matrix):\n");
+  for(int i=0;i<n;i++){
+    printf("Enter distance between %d and others:\n",i);
+    for(int j=0;j<n;j++){
+      scanf("%d",&cost[i][j]);
+    } 
+  }
+  int A[n][n];
+  APSP(cost,A);
+  printf("The Shortest path from each of the vertex to all the other vertices:\n");
+  
+  for(int i=0;i<n;i++){
+    for(int j=0;j<n;j++){
+      printf("%d\t",A[i][j]);
+    }
+    printf("\n");
+  }
+}
+Output:
+Enter no of vertices of graph:
+5
+Enter the Graph(Cost Adjacency Matrix):
+Enter distance between 0 and others:
+0 3 8 999 -4
+Enter distance between 1 and others:
+999 0 999 1 7
+Enter distance between 2 and others:
+999 4 0 999 999
+Enter distance between 3 and others:
+2 999 -5 0 6
+Enter distance between 4 and others:
+999 999 999 6 0
+The Shortest path from each of the vertex to all the other vertices:
+0   1   -3  2   -4
+3   0   -4  1   -1
+7   4   0   5   3
+2   -1  -5  0   -2
+8   5   1   6   0
+------------------------------------------------------------------------------------------------------
+9.Find the non attacking positions of Queens in a given chess board using backtracking Technique. 
+Program:
+#include<stdio.h>
+#include<stdlib.h>
+int n;
+int place(int k,int i,int x[]){
+  for(int j=0;j<k-1;j++){
+    if((x[j]==i) || (abs(j+1-k)==abs(x[j]-i)))
+      return 0;
+  }
+  return 1;
+}
+void Nqueen(int k,int x[]){
+  for(int i=1;i<=n;i++){
+    if(place(k,i,x)){
+      x[k-1]=i;
+      if(k==n){
+        for(int j=0;j<n;j++){
+          printf("%d ",x[j]);}
+        printf("\n");
+      }
+      else{
+        Nqueen(k+1,x);
+      }
+  }
+}
+}
+int main(){
+  printf("Enter the no. of Queens:");
+  scanf("%d",&n);
+  int x[n];
+  printf("The Solution Sets are:\n");
+  Nqueen(1,x);
+}
+Output:
+Enter the no. of Queens:4
+The Solution Sets are:
+2 4 1 3 
+3 1 4 2 
+
+Enter the no. of Queens:8
+The Solution Sets are:
+1 5 8 6 3 7 2 4 
+1 6 8 3 7 4 2 5 
+1 7 4 6 8 2 5 3 
+1 7 5 8 2 4 6 3 
+2 4 6 8 3 1 7 5 
+2 5 7 1 3 8 6 4 
+2 5 7 4 1 8 6 3 
+2 6 1 7 4 8 3 5 
+2 6 8 3 1 4 7 5 
+2 7 3 6 8 5 1 4 
+2 7 5 8 1 4 6 3 
+2 8 6 1 3 5 7 4 
+3 1 7 5 8 2 4 6 
+3 5 2 8 1 7 4 6 
+3 5 2 8 6 4 7 1 
+3 5 7 1 4 2 8 6 
+3 5 8 4 1 7 2 6 
+3 6 2 5 8 1 7 4 
+3 6 2 7 1 4 8 5 
+3 6 2 7 5 1 8 4 
+3 6 4 1 8 5 7 2 
+3 6 4 2 8 5 7 1 
+3 6 8 1 4 7 5 2 
+3 6 8 1 5 7 2 4 
+3 6 8 2 4 1 7 5 
+3 7 2 8 5 1 4 6 
+3 7 2 8 6 4 1 5 
+3 8 4 7 1 6 2 5 
+4 1 5 8 2 7 3 6 
+4 1 5 8 6 3 7 2 
+4 2 5 8 6 1 3 7 
+4 2 7 3 6 8 1 5 
+4 2 7 3 6 8 5 1 
+4 2 7 5 1 8 6 3 
+4 2 8 5 7 1 3 6 
+4 2 8 6 1 3 5 7 
+4 6 1 5 2 8 3 7 
+4 6 8 2 7 1 3 5 
+4 6 8 3 1 7 5 2 
+4 7 1 8 5 2 6 3 
+4 7 3 8 2 5 1 6 
+4 7 5 2 6 1 3 8 
+4 7 5 3 1 6 8 2 
+4 8 1 3 6 2 7 5 
+4 8 1 5 7 2 6 3 
+4 8 5 3 1 7 2 6 
+5 1 4 6 8 2 7 3 
+5 1 8 4 2 7 3 6 
+5 1 8 6 3 7 2 4 
+5 2 4 6 8 3 1 7 
+5 2 4 7 3 8 6 1 
+5 2 6 1 7 4 8 3 
+5 2 8 1 4 7 3 6 
+5 3 1 6 8 2 4 7 
+5 3 1 7 2 8 6 4 
+5 3 8 4 7 1 6 2 
+5 7 1 3 8 6 4 2 
+5 7 1 4 2 8 6 3 
+5 7 2 4 8 1 3 6 
+5 7 2 6 3 1 4 8 
+5 7 2 6 3 1 8 4 
+5 7 4 1 3 8 6 2 
+5 8 4 1 3 6 2 7 
+5 8 4 1 7 2 6 3 
+6 1 5 2 8 3 7 4 
+6 2 7 1 3 5 8 4 
+6 2 7 1 4 8 5 3 
+6 3 1 7 5 8 2 4 
+6 3 1 8 4 2 7 5 
+6 3 1 8 5 2 4 7 
+6 3 5 7 1 4 2 8 
+6 3 5 8 1 4 2 7 
+6 3 7 2 4 8 1 5 
+6 3 7 2 8 5 1 4 
+6 3 7 4 1 8 2 5 
+6 4 1 5 8 2 7 3 
+6 4 2 8 5 7 1 3 
+6 4 7 1 3 5 2 8 
+6 4 7 1 8 2 5 3 
+6 8 2 4 1 7 5 3 
+7 1 3 8 6 4 2 5 
+7 2 4 1 8 5 3 6 
+7 2 6 3 1 4 8 5 
+7 3 1 6 8 5 2 4 
+7 3 8 2 5 1 6 4 
+7 4 2 5 8 1 3 6 
+7 4 2 8 6 1 3 5 
+7 5 3 1 6 8 2 4 
+8 2 4 1 7 5 3 6 
+8 2 5 3 1 7 4 6 
+8 3 1 6 2 5 7 4 
+8 4 1 3 6 2 7 5 
+------------------------------------------------------------------------------------------------------
+
+10.Find an exact match of a pattern string in a text using KMP algorithm.
+Program:
+#include <stdio.h>
+#include <string.h>
+
+void compute_prefix_function(char p[], int pi[]) {
+    int m = strlen(p);
+    int k = 0, q;
+    pi[1] = 0;
+    for (q = 2; q <= m; q++) {
+        while (k > 0 && p[k] != p[q - 1]) {
+            k = pi[k];
+        }
+        if (p[k] == p[q - 1]) {
+            k = k + 1;
+        }
+        pi[q] = k;
+    }
+}
+
+void kmp(char t[], char p[]) {
+    int n = strlen(t);
+    int m = strlen(p);
+    int pi[m + 1];
+    compute_prefix_function(p, pi);
+    int q = 0, i;
+    for (i = 0; i < n; i++) {
+        while (q > 0 && p[q] != t[i]) {
+            q = pi[q];
+        }
+        if (p[q] == t[i]) {
+            q = q + 1;
+        }
+        if (q == m) {
+            printf("Pattern occurs with shift %d\n", i - m + 1);
+            q = pi[q];
+        }
+    }
+}
+
+int main() {
+    char t[20], p[20];
+    printf("\nEnter the text: ");
+    scanf("%s", t);
+    printf("\nEnter the pattern: ");
+    scanf("%s", p);
+    kmp(t, p);
+    return 0;
+}
+
+Output:
+------------------------------------------------------------------------------------------------------
